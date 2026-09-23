@@ -178,5 +178,5 @@ if st.button("🔍 Predict Default Risk", type="primary", use_container_width=Tr
 
     # Input summary table
     with st.expander("View input data submitted"):
-        st.dataframe(input_data.T.rename(columns={0: "Value"}),
-                     use_container_width=True)
+        display_input = input_data.T.rename(columns={0: "Value"}).astype(str)
+st.dataframe(display_input, use_container_width=True)
