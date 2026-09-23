@@ -23,6 +23,7 @@ TABLES_DIR      = OUTPUT_DIR / "tables"
 # ── Model artefact paths ──────────────────────────────────────────────────────
 MODELS_DIR              = ROOT_DIR / "models"
 MODEL_PATH              = MODELS_DIR / "random_forest_model.joblib"
+DEPLOYMENT_MODEL_PATH   = MODELS_DIR / "deployment_model.joblib"
 PREPROCESSOR_PATH       = MODELS_DIR / "preprocessor.joblib"
 FEATURE_NAMES_PATH      = MODELS_DIR / "feature_names.joblib"
 

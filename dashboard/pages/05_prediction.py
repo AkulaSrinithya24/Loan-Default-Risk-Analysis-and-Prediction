@@ -13,17 +13,29 @@ if str(PROJECT_ROOT) not in sys.path:
 import streamlit as st
 import pandas as pd
 
-from src.config import MODEL_PATH, DECISION_THRESHOLD
+from src.config import MODEL_PATH, DEPLOYMENT_MODEL_PATH, DECISION_THRESHOLD
 
 st.set_page_config(page_title="Prediction", page_icon="🎯", layout="wide")
 st.title("🎯 Loan Default Prediction")
 st.markdown("Enter the details of a loan application to predict the default probability.")
 st.markdown("---")
 
-# ── Check model exists ─────────────────────────────────────────────────────────
-if not MODEL_PATH.exists():
+# ── Resolve which model file to use ────────────────────────────────────────────
+# Priority: full model (local) → deployment model (cloud) → helpful error
+if MODEL_PATH.exists():
+    _model_path = MODEL_PATH
+elif DEPLOYMENT_MODEL_PATH.exists():
+    _model_path = DEPLOYMENT_MODEL_PATH
+    st.info(
+        "ℹ️ Running with the **deployment model** (30 trees).  \n"
+        "Predictions are fully functional. For the full model run "
+        "`python run_pipeline.py` locally."
+    )
+else:
     st.warning(
-        "No trained model found. Please run the training pipeline first:\n\n"
+        "No model file found. Generate the deployment model first:\n\n"
+        "```\npython scripts/create_deployment_model.py\n```\n\n"
+        "Or run the full training pipeline:\n\n"
         "```\npython run_pipeline.py\n```"
     )
     st.stop()
@@ -32,7 +44,7 @@ if not MODEL_PATH.exists():
 @st.cache_resource
 def load_model():
     import joblib
-    return joblib.load(MODEL_PATH)
+    return joblib.load(_model_path)
 
 pipeline = load_model()
 

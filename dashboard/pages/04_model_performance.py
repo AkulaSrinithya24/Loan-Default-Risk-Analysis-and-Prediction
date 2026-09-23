@@ -15,16 +15,32 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.config import RAW_DATA_PATH, RANDOM_STATE, TEST_SIZE, DECISION_THRESHOLD, MODEL_PATH
+from src.config import (
+    RAW_DATA_PATH, RANDOM_STATE, TEST_SIZE, DECISION_THRESHOLD,
+    MODEL_PATH, DEPLOYMENT_MODEL_PATH,
+)
 
 st.set_page_config(page_title="Model Performance", page_icon="🤖", layout="wide")
 st.title("🤖 Model Performance")
 st.markdown("---")
 
-# ── Check model exists ─────────────────────────────────────────────────────────
-if not MODEL_PATH.exists():
+# ── Resolve which model file to use ────────────────────────────────────────────
+# Priority: full model (local) → deployment model (cloud) → helpful error
+if MODEL_PATH.exists():
+    _model_path = MODEL_PATH
+elif DEPLOYMENT_MODEL_PATH.exists():
+    _model_path = DEPLOYMENT_MODEL_PATH
+    st.info(
+        "ℹ️ Running with the **deployment model** (30 trees).  \n"
+        "Metrics will be slightly different from the full 200-tree model "
+        "used in the academic report.  \n"
+        "To use the full model locally, run `python run_pipeline.py`."
+    )
+else:
     st.warning(
-        "No trained model found. Please run the training pipeline first:\n\n"
+        "No model file found. Generate the deployment model first:\n\n"
+        "```\npython scripts/create_deployment_model.py\n```\n\n"
+        "Or run the full training pipeline:\n\n"
         "```\npython run_pipeline.py\n```"
     )
     st.stop()
@@ -38,7 +54,7 @@ def load_model_and_data():
     from src.feature_engineering import build_preprocessor
     from sklearn.model_selection import train_test_split
 
-    pipeline = joblib.load(MODEL_PATH)
+    pipeline = joblib.load(_model_path)
     df = clean_data(load_data(RAW_DATA_PATH))
     X, y, _ = build_preprocessor(df)
     _, X_test, _, y_test = train_test_split(
