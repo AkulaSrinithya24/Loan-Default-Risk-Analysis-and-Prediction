@@ -1,6 +1,14 @@
 # Loan Default Risk Analysis and Prediction
 ### IBM SkillsBuild Data Analytics Academic Internship Project
 
+## 🚀 Live Demo
+
+**Streamlit Application:**  
+https://loan-default-risk-analysis-and-prediction-ayrecyonj3zrdgrij3w4.streamlit.app/prediction
+
+**GitHub Repository:**  
+https://github.com/AkulaSrinithya24/Loan-Default-Risk-Analysis-and-Prediction
+
 ---
 
 ## Project Overview
@@ -75,9 +83,10 @@ Loan_Default_Risk_Analytics/
 │   └── insights.py                   ← Business insights & recommendations
 │
 ├── models/                           ← Saved model artefacts (after training)
-│   ├── random_forest_model.joblib
-│   ├── preprocessor.joblib
-│   └── feature_names.joblib
+│   ├── deployment_model.joblib       ← Lightweight model for deployment
+│   ├── .gitkeep
+├── scripts/
+│   └── create_deployment_model.py    ← Creates lightweight deployment model
 │
 ├── outputs/
 │   ├── figures/                      ← Generated charts (PNG)
@@ -245,6 +254,16 @@ Run notebooks in order (01 → 06) for a guided walkthrough of the full project.
 | Streamlit | ≥ 1.32 | Interactive dashboard |
 | python-docx | ≥ 1.1 | Report generation |
 | Jupyter | ≥ 1.0 | Analytical notebooks |
+
+---
+
+### Deployment Model
+
+For Streamlit deployment, a lightweight Random Forest deployment model is provided:
+
+`models/deployment_model.joblib`
+
+This model is optimized for deployment size while preserving the preprocessing pipeline and prediction functionality required by the dashboard.
 
 ---
 
