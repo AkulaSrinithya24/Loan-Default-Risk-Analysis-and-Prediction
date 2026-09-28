@@ -29,8 +29,11 @@ from src.insights import generate_insights
 from src.config import RAW_DATA_PATH
 
 st.set_page_config(page_title="Risk Analysis", page_icon="⚠️", layout="wide")
-st.title("⚠️ Risk Analysis")
-st.markdown("---")
+
+from dashboard.theme import page_header, section_title, show_table
+
+page_header("Risk Analysis",
+            "Risk scoring, tier segmentation, key default drivers and business insights")
 
 
 @st.cache_data
@@ -46,7 +49,9 @@ df = get_data()
 df_tiers = get_tiered_data()
 
 # ── Section 1: Risk tier summary ───────────────────────────────────────────────
-st.subheader("1. Risk Tier Summary")
+section_title("1. Risk Tier Summary")
+st.markdown("<div style='margin-bottom:0.6rem;'></div>", unsafe_allow_html=True)
+
 tier_summary = get_risk_tier_summary(df_tiers)
 
 col1, col2, col3, col4 = st.columns(4)
@@ -59,73 +64,74 @@ for col, (_, row) in zip([col1, col2, col3, col4], tier_summary.iterrows()):
         delta_color="off",
     )
 
-st.markdown("---")
-st.dataframe(
-    tier_summary.style.format({
-        "default_rate_pct": "{:.2f}%",
-        "avg_risk_score": "{:.1f}",
-        "avg_credit_score": "{:.1f}",
-        "avg_loan_amount": "${:,.0f}",
-        "avg_interest_rate": "{:.2f}%",
-        "avg_dti_ratio": "{:.3f}",
-        "total_loan_value": "${:,.0f}",
-        "default_value": "${:,.0f}",
-        "default_value_pct": "{:.2f}%",
-    }),
-    use_container_width=True,
-)
+st.markdown("<div style='margin-top:0.7rem;'></div>", unsafe_allow_html=True)
+show_table(tier_summary, fmt={
+    "default_rate_pct": "{:.2f}%",
+    "avg_risk_score": "{:.1f}",
+    "avg_credit_score": "{:.1f}",
+    "avg_loan_amount": "${:,.0f}",
+    "avg_interest_rate": "{:.2f}%",
+    "avg_dti_ratio": "{:.3f}",
+    "total_loan_value": "${:,.0f}",
+    "default_value": "${:,.0f}",
+    "default_value_pct": "{:.2f}%",
+})
 
-st.markdown("---")
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # ── Section 2: Risk tier distribution chart ────────────────────────────────────
-st.subheader("2. Risk Tier Distribution")
+section_title("2. Risk Tier Distribution")
+st.markdown("<div style='margin-bottom:0.6rem;'></div>", unsafe_allow_html=True)
 fig1 = plot_risk_tier_distribution(df_tiers)
 st.pyplot(fig1)
 plt.close(fig1)
 
-st.markdown("---")
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # ── Section 3: Risk score vs actual default ────────────────────────────────────
-st.subheader("3. Heuristic Risk Score vs Actual Default")
+section_title("3. Heuristic Risk Score vs Actual Default")
+st.markdown("<div style='margin-bottom:0.6rem;'></div>", unsafe_allow_html=True)
 fig2 = plot_risk_score_by_default(df_tiers)
 st.pyplot(fig2)
 plt.close(fig2)
 
-st.markdown("---")
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # ── Section 4: Key drivers ─────────────────────────────────────────────────────
-st.subheader("4. Key Numeric Drivers of Default")
+section_title("4. Key Numeric Drivers of Default")
 st.markdown(
-    "The chart below shows the **relative difference** (%) in the mean value of each "
-    "feature between defaulters and non-defaulters. Larger bars = stronger driver."
+    "<p style='color:#5a6a80;font-size:0.85rem;margin:0.3rem 0 0.7rem 0;'>"
+    "The chart below shows the <strong>relative difference</strong> (%) in the mean "
+    "value of each feature between defaulters and non-defaulters. "
+    "Larger bars indicate stronger drivers.</p>",
+    unsafe_allow_html=True,
 )
 fig3 = plot_key_drivers(df)
 st.pyplot(fig3)
 plt.close(fig3)
 
 drivers = get_key_drivers(df)
-st.dataframe(
-    drivers.style.format({
-        "Mean (Default)": "{:.3f}",
-        "Mean (No Default)": "{:.3f}",
-        "Abs Difference": "{:.3f}",
-        "Rel Diff (%)": "{:.2f}%",
-    }),
-    use_container_width=True,
-)
+show_table(drivers, fmt={
+    "Mean (Default)": "{:.3f}",
+    "Mean (No Default)": "{:.3f}",
+    "Abs Difference": "{:.3f}",
+    "Rel Diff (%)": "{:.2f}%",
+})
 
-st.markdown("---")
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # ── Section 5: Risk profile heatmap ───────────────────────────────────────────
-st.subheader("5. Default Rate by Risk Tier x Employment Type")
+section_title("5. Default Rate by Risk Tier x Employment Type")
+st.markdown("<div style='margin-bottom:0.6rem;'></div>", unsafe_allow_html=True)
 fig4 = plot_risk_profile_heatmap(df_tiers)
 st.pyplot(fig4)
 plt.close(fig4)
 
-st.markdown("---")
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # ── Section 6: Business insights ──────────────────────────────────────────────
-st.subheader("6. Business Insights & Recommendations")
+section_title("6. Business Insights & Recommendations")
+st.markdown("<div style='margin-bottom:0.6rem;'></div>", unsafe_allow_html=True)
 
 insights = generate_insights(df)
 priority_filter = st.multiselect(
@@ -136,7 +142,7 @@ priority_filter = st.multiselect(
 
 filtered = [i for i in insights if i["priority"] in priority_filter]
 for ins in filtered:
-    color = "#e05c5c" if ins["priority"] == "High" else "#f39c12"
+    color = "#b91c1c" if ins["priority"] == "High" else "#b45309"
     with st.expander(f"[{ins['priority']}] {ins['category']} — {ins['finding'][:80]}..."):
         st.markdown(f"**Finding:** {ins['finding']}")
         st.markdown(f"**Recommendation:** {ins['recommendation']}")
