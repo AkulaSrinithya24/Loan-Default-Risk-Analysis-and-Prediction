@@ -779,9 +779,9 @@ def _exposure_by_income_quartile() -> pd.DataFrame:
         tmp["Income"],
         bins=[-np.inf, q1, q2, q3, np.inf],
         labels=[
-            f"Q1 <=${q1:,.0f}",
-            f"Q2 ${q1:,.0f}-${q2:,.0f}",
-            f"Q3 ${q2:,.0f}-${q3:,.0f}",
+            f"Q1 ≤${q1:,.0f}",
+            f"Q2 ${q1:,.0f}–${q2:,.0f}",
+            f"Q3 ${q2:,.0f}–${q3:,.0f}",
             f"Q4 >${q3:,.0f}",
         ],
     )
